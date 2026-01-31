@@ -1,16 +1,16 @@
 
 import { clsx } from "clsx";
-import { SuitabilityResult } from "@/lib/types";
+import { SuitabilityLevel } from "@/lib/types";
 
-export function SuitabilityBadge({ result }: { result: SuitabilityResult }) {
+export function SuitabilityBadge({ level }: { level: SuitabilityLevel }) {
     const colorClass =
-        result.color === 'green' ? 'bg-green-500/20 text-green-300 border-green-500/30' :
-            result.color === 'yellow' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' :
-                'bg-red-500/20 text-red-300 border-red-500/30';
+        level === 'Junior' ? 'bg-[#4ADE80] text-black shadow-[0_0_8px_rgba(74,222,128,0.6)]' :
+            level === 'Intermediate' ? 'bg-[#FACC15] text-black shadow-[0_0_8px_rgba(250,204,21,0.6)]' :
+                'bg-[#F43F5E] text-white shadow-[0_0_8px_rgba(244,63,94,0.6)]';
 
     return (
-        <div className={clsx("px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-2 border", colorClass)}>
-            {result.level}
+        <div className={clsx("px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-2", colorClass)}>
+            {level}
         </div>
     );
 }
