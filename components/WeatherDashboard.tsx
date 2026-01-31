@@ -7,6 +7,7 @@ import { determineRequiredLevel } from "@/lib/suitability";
 import { SuitabilityBadge } from "./SuitabilityBadge";
 import { SafetyWarning } from "./SafetyWarning";
 import { SunTideBar } from "./SunTideBar";
+import { DaySelector } from "./DaySelector";
 import { Calendar } from "lucide-react";
 import clsx from "clsx";
 
@@ -22,15 +23,16 @@ const SESSIONS = [
 export function WeatherDashboard({ location }: { location: Location | null }) {
     const [weather, setWeather] = useState<WeatherCondition | null>(null);
     const [loading, setLoading] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
     useEffect(() => {
         if (location) {
             setLoading(true);
-            fetchWeather(location.lat, location.lon)
+            fetchWeather(location.lat, location.lon, selectedDate)
                 .then(setWeather)
                 .finally(() => setLoading(false));
         }
-    }, [location]);
+    }, [location, selectedDate]);
 
     if (!location) {
         return <div className="text-center text-cream/60 mt-20 text-lg">Select a location to check conditions</div>;
@@ -63,14 +65,18 @@ export function WeatherDashboard({ location }: { location: Location | null }) {
 
     return (
         <div className="w-full mt-6">
+            <DaySelector selectedDate={selectedDate} onSelect={setSelectedDate} />
+
             {/* Dashboard Header */}
             <div className="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
                 <div>
                     <div className="flex items-center gap-2 text-cream/70 text-sm mb-1">
                         <Calendar className="w-4 h-4" />
-                        <span>Today's Forecast</span>
+                        <span>Forecast for</span>
                     </div>
-                    <h2 className="text-3xl font-bold text-white drop-shadow-sm">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h2>
+                    <h2 className="text-3xl font-bold text-white drop-shadow-sm">
+                        {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                    </h2>
                 </div>
             </div>
 
