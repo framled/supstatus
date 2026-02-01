@@ -3,8 +3,13 @@ import { SuitabilityLevel } from "@/lib/types";
 import { useLanguage } from "@/lib/i18n";
 import { Wind, Waves, Thermometer, Loader2 } from "lucide-react";
 
+import { translations } from "@/lib/i18n";
+
+type SessionKey = keyof typeof translations.es.session;
+export type SessionLabel = Exclude<SessionKey, 'conditions'>;
+
 interface SessionCardProps {
-    label: string; // This comes from parent, will be translated there
+    label: SessionLabel; // This comes from parent, will be translated there
     time: string;
     conditions: {
         windSpeed: number;

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Location, ForecastData } from "@/lib/types";
 import { fetchWeather } from "@/lib/weather";
 import { determineRequiredLevel } from "@/lib/suitability";
-import { SuitabilityBadge } from "./SuitabilityBadge";
 import { SafetyWarning } from "./SafetyWarning";
 import { SunTideBar } from "./SunTideBar";
 import { DaySelector } from "./DaySelector";
@@ -21,7 +20,7 @@ const SESSIONS = [
     { id: "afternoon", label: "Afternoon Onshore", time: "15:00" },
     { id: "golden", label: "Golden Hour", time: "18:00" },
     { id: "night", label: "Nightfall", time: "21:00" },
-];
+] as const;
 
 export function WeatherDashboard({ location }: { location: Location | null }) {
     const [forecast, setForecast] = useState<ForecastData | null>(null);
