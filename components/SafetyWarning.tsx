@@ -10,6 +10,7 @@ export function SafetyWarning() {
                 <h3 className="text-white font-bold mb-1">Safety First</h3>
                 <p className="text-cream/60 text-sm leading-relaxed">
                     Conditions in Central Chile can change rapidly. Always check local authorities and never paddle alone in offshore winds.
+                    <span className="block mt-1 text-cream/80 font-medium">Wear a safety vest (PFD) at all times.</span>
                 </p>
             </div>
         </div>

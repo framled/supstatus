@@ -8,6 +8,7 @@ import { SuitabilityBadge } from "./SuitabilityBadge";
 import { SafetyWarning } from "./SafetyWarning";
 import { SunTideBar } from "./SunTideBar";
 import { DaySelector } from "./DaySelector";
+import { SessionCard } from "./SessionCard";
 import { Calendar } from "lucide-react";
 import clsx from "clsx";
 
@@ -83,29 +84,13 @@ export function WeatherDashboard({ location }: { location: Location | null }) {
             {/* Session Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {sessionCards.map((card) => (
-                    <div key={card.id} className="glass-card p-5 rounded-lg flex flex-col gap-3 group">
-                        <div className="flex justify-between items-start">
-                            <span className="text-white font-semibold text-lg">{card.label}</span>
-                            <SuitabilityBadge level={card.level} />
-                        </div>
-
-                        <div className="h-px bg-white/10 w-full my-1" />
-
-                        <div className="flex justify-between items-center text-cream/90 text-sm">
-                            <div className="flex flex-col">
-                                <span className="text-xs text-cream/50 uppercase">Wind</span>
-                                <span className="font-mono text-lg font-medium">{card.conditions.windSpeed} kn</span>
-                            </div>
-                            <div className="flex flex-col text-right">
-                                <span className="text-xs text-cream/50 uppercase">Waves</span>
-                                <span className="font-mono text-lg font-medium">{card.conditions.waveHeight} m</span>
-                            </div>
-                        </div>
-
-                        <p className="text-xs mt-1 text-cream/60 italic">
-                            Minimum required level
-                        </p>
-                    </div>
+                    <SessionCard
+                        key={card.id}
+                        label={card.label}
+                        time={card.time}
+                        conditions={card.conditions}
+                        level={card.level}
+                    />
                 ))}
             </div>
 
