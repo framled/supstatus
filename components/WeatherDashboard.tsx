@@ -10,6 +10,7 @@ import { SunTideBar } from "./SunTideBar";
 import { DaySelector } from "./DaySelector";
 import { SessionCard } from "./SessionCard";
 import { WeatherError } from "./WeatherError";
+import { useLanguage } from "@/lib/i18n";
 import { Calendar } from "lucide-react";
 import clsx from "clsx";
 
@@ -27,6 +28,7 @@ export function WeatherDashboard({ location }: { location: Location | null }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const { t, language } = useLanguage();
 
     const loadWeather = () => {
         if (!location) return;
@@ -94,6 +96,8 @@ export function WeatherDashboard({ location }: { location: Location | null }) {
         };
     });
 
+    const locale = language === 'es' ? 'es-CL' : 'en-US';
+
     return (
         <div className="w-full mt-6">
             <DaySelector selectedDate={selectedDate} onSelect={setSelectedDate} />
@@ -103,10 +107,10 @@ export function WeatherDashboard({ location }: { location: Location | null }) {
                 <div>
                     <div className="flex items-center gap-2 text-cream/70 text-sm mb-1">
                         <Calendar className="w-4 h-4" />
-                        <span>Forecast for</span>
+                        <span>{t.dashboard.forecastFor}</span>
                     </div>
-                    <h2 className="text-3xl font-bold text-white drop-shadow-sm">
-                        {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                    <h2 className="text-3xl font-bold text-white drop-shadow-sm capitalize">
+                        {selectedDate.toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' })}
                     </h2>
                 </div>
             </div>
@@ -116,7 +120,7 @@ export function WeatherDashboard({ location }: { location: Location | null }) {
                 {sessionCards.map((card) => (
                     <SessionCard
                         key={card.id}
-                        label={card.label}
+                        label={card.id}
                         time={card.time}
                         conditions={card.conditions}
                         level={card.level}

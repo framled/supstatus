@@ -1,5 +1,6 @@
 import { Sunrise, Sunset, Waves } from 'lucide-react';
 import { GlassCard } from './GlassCard';
+import { useLanguage } from '@/lib/i18n';
 
 interface SunTideBarProps {
     sunrise?: string;
@@ -9,6 +10,8 @@ interface SunTideBarProps {
 }
 
 export function SunTideBar({ sunrise, sunset, lowTide, loading = false }: SunTideBarProps) {
+    const { t } = useLanguage();
+
     const formatTime = (isoString?: string) => {
         if (!isoString) return "--:--";
         try {
@@ -23,21 +26,21 @@ export function SunTideBar({ sunrise, sunset, lowTide, loading = false }: SunTid
             <GlassCard
                 layout="vertical"
                 icon={<Sunrise className="text-yellow-300 w-6 h-6" />}
-                label="Sunrise"
+                label={t.sunTide.sunrise}
                 value={formatTime(sunrise)}
                 loading={loading}
             />
             <GlassCard
                 layout="vertical"
                 icon={<Sunset className="text-primary w-6 h-6" />}
-                label="Sunset"
+                label={t.sunTide.sunset}
                 value={formatTime(sunset)}
                 loading={loading}
             />
             <GlassCard
                 layout="vertical"
                 icon={<Waves className="text-blue-300 w-6 h-6" />}
-                label="Low Tide"
+                label={t.sunTide.lowTide}
                 value={formatTime(lowTide)}
                 loading={loading}
             />

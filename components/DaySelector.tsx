@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import clsx from "clsx";
+import { useLanguage } from "@/lib/i18n";
 
 interface DaySelectorProps {
     selectedDate: Date;
@@ -10,6 +11,7 @@ interface DaySelectorProps {
 
 export function DaySelector({ selectedDate, onSelect }: DaySelectorProps) {
     const scrollRef = useRef<HTMLDivElement>(null);
+    const { t, language } = useLanguage();
 
     // Generate next 7 days
     const days = Array.from({ length: 7 }, (_, i) => {
@@ -23,9 +25,17 @@ export function DaySelector({ selectedDate, onSelect }: DaySelectorProps) {
         d1.getMonth() === d2.getMonth();
 
     const formatDay = (date: Date, index: number) => {
-        if (index === 0) return "Today";
-        if (index === 1) return "Tomorrow";
-        return date.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
+        if (index === 0) return t.days.today;
+        if (index === 1) return t.days.tomorrow;
+        // Use 'es-CL' for Spanish, 'en-US' for English
+        const locale = language === 'es' ? 'es-CL' : 'en-US';
+        return date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric' });
+    };
+
+    const formatWeekday = (date: Date, index: number) => {
+        if (index === 0) return t.days.now;
+        const locale = language === 'es' ? 'es-CL' : 'en-US';
+        return date.toLocaleDateString(locale, { weekday: 'short' });
     };
 
     return (
@@ -45,9 +55,9 @@ export function DaySelector({ selectedDate, onSelect }: DaySelectorProps) {
                             )}
                         >
                             <span className={clsx("text-xs font-bold uppercase tracking-wider", selected ? "text-white" : "text-cream/50")}>
-                                {idx === 0 ? "Now" : date.toLocaleDateString('en-US', { weekday: 'short' })}
+                                {formatWeekday(date, idx)}
                             </span>
-                            <span className={clsx("text-sm font-semibold whitespace-nowrap", selected ? "text-white" : "text-cream/80")}>
+                            <span className={clsx("text-sm font-semibold whitespace-nowrap capitalize", selected ? "text-white" : "text-cream/80")}>
                                 {formatDay(date, idx)}
                             </span>
                         </button>
