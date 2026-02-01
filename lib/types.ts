@@ -5,6 +5,9 @@ export interface WeatherCondition {
     waveHeight: number; // meters
     temperature: number; // celsius
     conditionCode: number; // WMO code
+    sunrise: string; // ISO time
+    sunset: string; // ISO time
+    lowTideTime: string; // ISO time
 }
 
 export interface Location {

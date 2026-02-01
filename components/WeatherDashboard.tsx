@@ -95,7 +95,11 @@ export function WeatherDashboard({ location }: { location: Location | null }) {
             </div>
 
             {/* Info Bar */}
-            <SunTideBar />
+            <SunTideBar
+                sunrise={weather.sunrise}
+                sunset={weather.sunset}
+                lowTide={weather.lowTideTime}
+            />
 
             {/* Warning */}
             <SafetyWarning />

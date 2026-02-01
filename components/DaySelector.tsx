@@ -29,7 +29,7 @@ export function DaySelector({ selectedDate, onSelect }: DaySelectorProps) {
     };
 
     return (
-        <div className="w-full overflow-x-auto no-scrollbar pb-2 mb-4" ref={scrollRef}>
+        <div className="w-full overflow-x-auto no-scrollbar py-4 mb-2" ref={scrollRef}>
             <div className="flex gap-3 min-w-max px-1">
                 {days.map((date, idx) => {
                     const selected = isSameDay(date, selectedDate);

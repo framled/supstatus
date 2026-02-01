@@ -1,5 +1,5 @@
 
-import { WeatherCondition, SuitabilityLevel, SuitabilityResult } from './types';
+import { WeatherCondition, SuitabilityLevel } from './types';
 
 export function determineRequiredLevel(conditions: WeatherCondition): SuitabilityLevel {
     const { windSpeed, waveHeight } = conditions;
