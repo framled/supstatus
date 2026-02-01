@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Location, WeatherCondition } from "@/lib/types";
+import { Location, ForecastData } from "@/lib/types";
 import { fetchWeather } from "@/lib/weather";
 import { determineRequiredLevel } from "@/lib/suitability";
 import { SuitabilityBadge } from "./SuitabilityBadge";
@@ -9,6 +9,7 @@ import { SafetyWarning } from "./SafetyWarning";
 import { SunTideBar } from "./SunTideBar";
 import { DaySelector } from "./DaySelector";
 import { SessionCard } from "./SessionCard";
+import { WeatherError } from "./WeatherError";
 import { Calendar } from "lucide-react";
 import clsx from "clsx";
 
@@ -22,46 +23,73 @@ const SESSIONS = [
 ];
 
 export function WeatherDashboard({ location }: { location: Location | null }) {
-    const [weather, setWeather] = useState<WeatherCondition | null>(null);
+    const [forecast, setForecast] = useState<ForecastData | null>(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [selectedDate, setSelectedDate] = useState(new Date());
 
+    const loadWeather = () => {
+        if (!location) return;
+
+        setLoading(true);
+        setError(null);
+
+        fetchWeather(location.lat, location.lon)
+            .then(setForecast)
+            .catch((err) => {
+                console.error(err);
+                setError(err.message || "Failed to load weather data");
+            })
+            .finally(() => setLoading(false));
+    };
+
     useEffect(() => {
-        if (location) {
-            setLoading(true);
-            fetchWeather(location.lat, location.lon, selectedDate)
-                .then(setWeather)
-                .finally(() => setLoading(false));
-        }
-    }, [location, selectedDate]);
+        loadWeather();
+    }, [location]);
 
     if (!location) {
         return <div className="text-center text-cream/60 mt-20 text-lg">Select a location to check conditions</div>;
     }
 
-    if (!weather && loading) {
+    if (error) {
+        return <WeatherError message={error} onRetry={loadWeather} />;
+    }
+
+    if (!forecast && loading) {
         return <div className="text-center text-white mt-20 animate-pulse">Loading forecast...</div>;
     }
 
-    if (!weather) return null;
+    if (!forecast) return null;
 
-    // Generate session cards based on current weather
-    const sessionCards = SESSIONS.map((session, idx) => {
-        // Mock variation: wind increases in afternoon
-        const windMod = idx === 3 ? 1.5 : idx === 4 ? 0.8 : 1.0;
-        const waveMod = 1.0;
+    // Get Data for Selected Date
+    const dateStr = selectedDate.toISOString().split('T')[0];
+    const dailyData = forecast[dateStr];
 
-        const sessionConditions = {
-            ...weather,
-            windSpeed: parseFloat((weather.windSpeed * windMod).toFixed(1)),
-            waveHeight: parseFloat((weather.waveHeight * waveMod).toFixed(1)),
+    if (!dailyData) {
+        return <div className="text-center text-cream/60 mt-20">No forecast data available for this date.</div>;
+    }
+
+    // Generate session cards based on REAL hourly data
+    const sessionCards = SESSIONS.map((session) => {
+        const targetHour = parseInt(session.time.split(':')[0]);
+
+        // Find closest hourly data
+        const hourlyCondition = dailyData.hourly.find((h) => {
+            const hTime = new Date(h.time);
+            return hTime.getHours() === targetHour;
+        }) || dailyData.hourly[0];
+
+        const conditions = {
+            windSpeed: hourlyCondition?.windSpeed ?? 0,
+            waveHeight: hourlyCondition?.waveHeight ?? 0,
+            temperature: hourlyCondition?.temperature ?? 0,
         };
 
-        const level = determineRequiredLevel(sessionConditions);
+        const level = determineRequiredLevel(conditions as any);
 
         return {
             ...session,
-            conditions: sessionConditions,
+            conditions,
             level
         };
     });
@@ -99,9 +127,9 @@ export function WeatherDashboard({ location }: { location: Location | null }) {
 
             {/* Info Bar */}
             <SunTideBar
-                sunrise={weather.sunrise}
-                sunset={weather.sunset}
-                lowTide={weather.lowTideTime}
+                sunrise={dailyData.sunrise}
+                sunset={dailyData.sunset}
+                lowTide={dailyData.lowTideTime}
                 loading={loading}
             />
 

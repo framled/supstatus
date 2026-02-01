@@ -10,6 +10,23 @@ export interface WeatherCondition {
     lowTideTime: string; // ISO time
 }
 
+export interface HourlyCondition {
+    time: string; // ISO string
+    temperature: number;
+    windSpeed: number;
+    waveHeight: number;
+}
+
+export interface DailyForecast {
+    date: string; // YYYY-MM-DD
+    sunrise: string;
+    sunset: string;
+    lowTideTime: string;
+    hourly: HourlyCondition[];
+}
+
+export type ForecastData = Record<string, DailyForecast>;
+
 export interface Location {
     id: string;
     name: string;
