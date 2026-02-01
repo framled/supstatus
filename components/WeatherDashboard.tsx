@@ -39,9 +39,11 @@ export function WeatherDashboard({ location }: { location: Location | null }) {
         return <div className="text-center text-cream/60 mt-20 text-lg">Select a location to check conditions</div>;
     }
 
-    if (loading || !weather) {
-        return <div className="text-center text-white mt-20 animate-pulse">Updating forecast...</div>;
+    if (!weather && loading) {
+        return <div className="text-center text-white mt-20 animate-pulse">Loading forecast...</div>;
     }
+
+    if (!weather) return null;
 
     // Generate session cards based on current weather
     const sessionCards = SESSIONS.map((session, idx) => {
@@ -90,6 +92,7 @@ export function WeatherDashboard({ location }: { location: Location | null }) {
                         time={card.time}
                         conditions={card.conditions}
                         level={card.level}
+                        loading={loading}
                     />
                 ))}
             </div>
@@ -99,6 +102,7 @@ export function WeatherDashboard({ location }: { location: Location | null }) {
                 sunrise={weather.sunrise}
                 sunset={weather.sunset}
                 lowTide={weather.lowTideTime}
+                loading={loading}
             />
 
             {/* Warning */}

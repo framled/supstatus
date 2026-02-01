@@ -5,9 +5,10 @@ interface SunTideBarProps {
     sunrise?: string;
     sunset?: string;
     lowTide?: string;
+    loading?: boolean;
 }
 
-export function SunTideBar({ sunrise, sunset, lowTide }: SunTideBarProps) {
+export function SunTideBar({ sunrise, sunset, lowTide, loading = false }: SunTideBarProps) {
     const formatTime = (isoString?: string) => {
         if (!isoString) return "--:--";
         try {
@@ -24,18 +25,21 @@ export function SunTideBar({ sunrise, sunset, lowTide }: SunTideBarProps) {
                 icon={<Sunrise className="text-yellow-300 w-6 h-6" />}
                 label="Sunrise"
                 value={formatTime(sunrise)}
+                loading={loading}
             />
             <GlassCard
                 layout="vertical"
                 icon={<Sunset className="text-primary w-6 h-6" />}
                 label="Sunset"
                 value={formatTime(sunset)}
+                loading={loading}
             />
             <GlassCard
                 layout="vertical"
                 icon={<Waves className="text-blue-300 w-6 h-6" />}
                 label="Low Tide"
                 value={formatTime(lowTide)}
+                loading={loading}
             />
         </div>
     );

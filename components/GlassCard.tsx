@@ -1,15 +1,17 @@
 import { ReactNode } from "react";
 import clsx from "clsx";
+import { Loader2 } from "lucide-react";
 
 interface GlassCardProps {
     layout?: 'vertical' | 'horizontal';
     icon?: ReactNode;
     label: string;
     value: string;
+    loading?: boolean;
     className?: string;
 }
 
-export function GlassCard({ layout = 'vertical', icon, label, value, className }: GlassCardProps) {
+export function GlassCard({ layout = 'vertical', icon, label, value, loading = false, className }: GlassCardProps) {
     return (
         <div className={clsx(
             "glass-panel rounded-2xl p-4 flex",
@@ -24,7 +26,11 @@ export function GlassCard({ layout = 'vertical', icon, label, value, className }
 
             <div className={clsx("flex flex-col", layout === 'vertical' ? "items-center" : "items-start")}>
                 <span className="text-cream/60 text-xs uppercase tracking-wider">{label}</span>
-                <span className="text-white font-semibold">{value}</span>
+                {loading ? (
+                    <Loader2 className="w-5 h-5 animate-spin text-white my-1" />
+                ) : (
+                    <span className="text-white font-semibold">{value}</span>
+                )}
             </div>
         </div>
     );
