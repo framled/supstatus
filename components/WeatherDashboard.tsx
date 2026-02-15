@@ -103,17 +103,27 @@ export function WeatherDashboard({ location, onLocationSelect }: WeatherDashboar
             <Header />
 
             {/* 2. Map Section (Below Header) */}
-            <section className="relative w-full h-[600px]">
-                <div className="relative w-full h-full z-[0]">
-                    <OpenMap
+            <section className="relative w-full h-[600px] flex flex-col">
+                {/* Mobile Location Header (Above Map) */}
+                <div className="md:hidden w-full z-[70] bg-deep-indigo relative">
+                    <LocationCard
                         location={location}
-                        onLocationSelect={onLocationSelect}
-                        className="w-full h-full rounded-none" // Removed border/radius for full width integration
+                        weather={currentWeather}
+                        compact={true}
+                        className="rounded-none border-b border-white/10"
                     />
                 </div>
 
-                {/* Location Info Overlay - Positioned relative to this section */}
-                <div className="absolute top-8 left-8 z-[50] w-80 pointer-events-none">
+                <div className="relative w-full h-full z-[0] flex-1">
+                    <OpenMap
+                        location={location}
+                        onLocationSelect={onLocationSelect}
+                        className="w-full h-full rounded-none"
+                    />
+                </div>
+
+                {/* Desktop Location Info Overlay */}
+                <div className="hidden md:block absolute top-8 left-8 z-[50] w-80 pointer-events-none">
                     <LocationCard
                         location={location}
                         weather={currentWeather}

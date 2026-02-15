@@ -12,10 +12,35 @@ interface LocationCardProps {
         waveHeight: number;
     } | null;
     className?: string;
+    compact?: boolean;
 }
 
-export function LocationCard({ location, weather, className }: LocationCardProps) {
+export function LocationCard({ location, weather, className, compact = false }: LocationCardProps) {
     if (!location) return null;
+
+    if (compact) {
+        return (
+            <div className={clsx("flex items-center justify-between px-6 py-4 bg-deep-indigo border-b border-white/10", className)}>
+                <div className="flex flex-col">
+                    <h2 className="text-lg font-bold text-white tracking-tight leading-tight">{location.name}</h2>
+                    <p className="text-white/60 text-xs">{location.region || "Chile"}</p>
+                </div>
+
+                {weather && (
+                    <div className="flex items-center gap-6">
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-light text-white">{weather.temperature.toFixed(0)}°</span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <Wind className="w-4 h-4 text-sunset-purple" />
+                            <span className="text-sm font-semibold text-white">{weather.windSpeed.toFixed(0)} kt</span>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    }
 
     return (
         <div className={clsx("glass-morphism rounded-3xl p-6 pointer-events-auto shadow-2xl border-white/10 transition-all duration-300", className)}>
