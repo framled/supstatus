@@ -1,7 +1,8 @@
 "use client";
 
-import { Location } from "@/lib/types";
+import { Location, SuitabilityLevel } from "@/lib/types";
 import { Wind, CheckCircle, Sun } from "lucide-react";
+import { SuitabilityBadge } from "./SuitabilityBadge";
 import clsx from "clsx";
 
 interface LocationCardProps {
@@ -11,18 +12,22 @@ interface LocationCardProps {
         windSpeed: number;
         waveHeight: number;
     } | null;
+    suitability?: SuitabilityLevel;
     className?: string;
     compact?: boolean;
 }
 
-export function LocationCard({ location, weather, className, compact = false }: LocationCardProps) {
+export function LocationCard({ location, weather, suitability, className, compact = false }: LocationCardProps) {
     if (!location) return null;
 
     if (compact) {
         return (
             <div className={clsx("flex items-center justify-between px-6 py-4 bg-deep-indigo border-b border-white/10", className)}>
                 <div className="flex flex-col">
-                    <h2 className="text-lg font-bold text-white tracking-tight leading-tight">{location.name}</h2>
+                    <div className="flex items-center gap-2">
+                        <h2 className="text-lg font-bold text-white tracking-tight leading-tight">{location.name}</h2>
+                        {suitability && <SuitabilityBadge level={suitability} variant="led" />}
+                    </div>
                     <p className="text-white/60 text-xs">{location.region || "Chile"}</p>
                 </div>
 

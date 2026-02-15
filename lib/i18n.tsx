@@ -51,6 +51,10 @@ export const translations = {
             junior: "Principiante",
             intermediate: "Intermedio",
             senior: "Avanzado"
+        },
+        sections: {
+            recommended: "Sesión Recomendada",
+            allSessions: "Todas las Sesiones",
         }
     },
     en: {
@@ -99,6 +103,10 @@ export const translations = {
             junior: "Junior",
             intermediate: "Intermediate",
             senior: "Senior"
+        },
+        sections: {
+            recommended: "Recommended Session",
+            allSessions: "All Sessions",
         }
     }
 };
@@ -121,8 +129,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <LanguageContext.Provider value= { value } >
-        { children }
+        <LanguageContext.Provider value={value} >
+            {children}
         </LanguageContext.Provider>
     );
 }

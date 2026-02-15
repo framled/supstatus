@@ -11,7 +11,7 @@ import { DaySelector } from "./DaySelector";
 import { SessionCard } from "./SessionCard";
 import { WeatherError } from "./WeatherError";
 import { useLanguage } from "@/lib/i18n";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, List } from "lucide-react";
 import { LocationCard } from "./LocationCard";
 import { Header } from "./Header";
 
@@ -65,7 +65,7 @@ export function WeatherDashboard({ location, onLocationSelect }: WeatherDashboar
     const dailyData = forecast ? forecast[dateStr] : null;
 
     // Generate session cards based on REAL hourly data
-    const sessionCards = dailyData ? SESSIONS.map((session) => {
+    const allSessionCards = dailyData ? SESSIONS.map((session) => {
         const targetHour = parseInt(session.time.split(':')[0]);
 
         const hourlyCondition = dailyData.hourly.find((h) => {
@@ -88,11 +88,32 @@ export function WeatherDashboard({ location, onLocationSelect }: WeatherDashboar
         };
     }) : [];
 
+    // Determine Logic for Recommended Session
+    // 1. Filter for future sessions if today
+    // 2. Sort by lowest wind speed (best condition generally for SUP)
+    const currentHour = new Date().getHours();
+    const isToday = dateStr === new Date().toISOString().split('T')[0];
+
+    const futureSessions = allSessionCards.filter(session => {
+        if (!isToday) return true; // If tomorrow/other date, all sessions are valid
+        const sessionHour = parseInt(session.time.split(':')[0]);
+        return sessionHour > currentHour;
+    });
+
+    // Sort by wind speed (ascending) to find the "best" condition
+    const recommendedSession = [...futureSessions].sort((a, b) => a.conditions.windSpeed - b.conditions.windSpeed)[0];
+
     const currentWeather = dailyData ? {
         temperature: dailyData.hourly[0]?.temperature || 0,
         windSpeed: dailyData.hourly[0]?.windSpeed || 0,
         waveHeight: dailyData.hourly[0]?.waveHeight || 0,
     } : null;
+
+    const currentLevel = currentWeather ? determineRequiredLevel({
+        windSpeed: currentWeather.windSpeed,
+        waveHeight: currentWeather.waveHeight,
+        temperature: currentWeather.temperature
+    } as any) : undefined;
 
     const locale = language === 'es' ? 'es-CL' : 'en-US';
 
@@ -109,6 +130,7 @@ export function WeatherDashboard({ location, onLocationSelect }: WeatherDashboar
                     <LocationCard
                         location={location}
                         weather={currentWeather}
+                        suitability={currentLevel}
                         compact={true}
                         className="rounded-none border-b border-white/10"
                     />
@@ -127,6 +149,7 @@ export function WeatherDashboard({ location, onLocationSelect }: WeatherDashboar
                     <LocationCard
                         location={location}
                         weather={currentWeather}
+                        suitability={currentLevel}
                         className="glass-morphism rounded-3xl p-6 pointer-events-auto shadow-2xl border-white/20"
                     />
                 </div>
@@ -159,15 +182,42 @@ export function WeatherDashboard({ location, onLocationSelect }: WeatherDashboar
                             </div>
                         ) : (
                             <>
-                                {/* Recommended Sessions (Stitch ID: 152) */}
+                                {/* Recommended Session (Best Next) */}
                                 <section>
                                     <div className="flex items-center gap-3 mb-6">
-                                        <CheckCircle className="text-primary w-6 h-6" /> {/* Verified Icon replacement */}
-                                        <h3 className="text-xl font-bold text-foreground tracking-wide">Recommended Sessions</h3>
+                                        <CheckCircle className="text-sunset-orange w-6 h-6" />
+                                        {/* @ts-ignore - t.sections is valid but TS might not infer update yet */}
+                                        <h3 className="text-xl font-bold text-foreground tracking-wide">{t.sections?.recommended || "Recommended Session"}</h3>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {sessionCards.map((card) => (
+                                        {recommendedSession ? (
+                                            <SessionCard
+                                                key={recommendedSession.id}
+                                                label={recommendedSession.id}
+                                                time={recommendedSession.time}
+                                                conditions={recommendedSession.conditions}
+                                                level={recommendedSession.level}
+                                                loading={loading}
+                                            />
+                                        ) : (
+                                            <div className="col-span-full p-6 glass-morphism rounded-xl text-center text-white/60">
+                                                No more recommended sessions for today. Check back tomorrow!
+                                            </div>
+                                        )}
+                                    </div>
+                                </section>
+
+                                {/* All Sessions (Unfiltered) */}
+                                <section>
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <List className="text-white/60 w-6 h-6" />
+                                        {/* @ts-ignore */}
+                                        <h3 className="text-xl font-bold text-foreground tracking-wide">{t.sections?.allSessions || "All Sessions"}</h3>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {allSessionCards.map((card) => (
                                             <SessionCard
                                                 key={card.id}
                                                 label={card.id}
