@@ -1,10 +1,11 @@
 "use client";
 
 import { Location, SuitabilityLevel } from "@/lib/types";
-import { Wind, CheckCircle, Sun } from "lucide-react";
+import { Wind, CheckCircle, Sun, AlertTriangle, AlertOctagon } from "lucide-react";
 import { SuitabilityBadge } from "./SuitabilityBadge";
 import clsx from "clsx";
 import { useUnit } from "@/lib/units";
+import { useLanguage } from "@/lib/i18n";
 
 interface LocationCardProps {
     location: Location | null;
@@ -20,6 +21,7 @@ interface LocationCardProps {
 
 export function LocationCard({ location, weather, suitability, className, compact = false }: LocationCardProps) {
     const { convertSpeed } = useUnit();
+    const { t } = useLanguage();
 
     if (!location) return null;
 
@@ -48,6 +50,29 @@ export function LocationCard({ location, weather, suitability, className, compac
                 )}
             </div>
         );
+    }
+
+    // Determine content based on suitability
+    let conditionLabel = "---";
+    let conditionDesc = "No data available";
+    let ConditionIcon = CheckCircle;
+    let conditionColor = "text-white/40";
+
+    if (suitability) {
+        const key = suitability.toLowerCase() as keyof typeof t.suitability;
+        conditionLabel = t.suitability[key];
+        conditionDesc = t.session.conditions[key];
+
+        if (suitability === 'Junior') {
+            ConditionIcon = CheckCircle;
+            conditionColor = "text-green-400";
+        } else if (suitability === 'Intermediate') {
+            ConditionIcon = AlertTriangle;
+            conditionColor = "text-yellow-400";
+        } else {
+            ConditionIcon = AlertOctagon;
+            conditionColor = "text-rose-500";
+        }
     }
 
     return (
@@ -80,8 +105,8 @@ export function LocationCard({ location, weather, suitability, className, compac
                         <div className="flex flex-col">
                             <span className="text-xs uppercase tracking-wider text-foreground/40 mb-1">Conditions</span>
                             <div className="flex items-center gap-1">
-                                <CheckCircle className="w-4 h-4 text-green-400" />
-                                <span className="font-semibold text-foreground">Optimal</span>
+                                <ConditionIcon className={clsx("w-4 h-4", conditionColor)} />
+                                <span className="font-semibold text-foreground">{conditionLabel}</span>
                             </div>
                         </div>
                     </div>
@@ -90,7 +115,7 @@ export function LocationCard({ location, weather, suitability, className, compac
 
             <div className="mt-8 pt-6 border-t border-white/10">
                 <p className="text-sm text-foreground/70 italic leading-relaxed">
-                    "Perfect glassy conditions for a sunset paddle session. Mild offshore breeze expected."
+                    "{conditionDesc}"
                 </p>
             </div>
         </div>
