@@ -2,6 +2,7 @@
 
 import { Waves } from "lucide-react";
 import { LanguageSelector } from "./LanguageSelector";
+import { UnitSelector } from "./UnitSelector";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 
@@ -23,7 +24,7 @@ export function Header() {
                 scrolled ? "bg-deep-indigo/90 backdrop-blur-md py-3 shadow-lg" : "bg-deep-indigo py-4"
             )}
         >
-            <div className="container mx-auto px-6 flex justify-between items-center">
+            <div className="w-full max-w-5xl mx-auto px-4 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                     <Waves className="text-sunset-orange w-8 h-8" />
                     <span className="text-2xl font-bold tracking-tight text-foreground uppercase flex items-center gap-1">
@@ -31,7 +32,8 @@ export function Header() {
                     </span>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                    <UnitSelector />
                     <div className="relative">
                         <LanguageSelector />
                     </div>

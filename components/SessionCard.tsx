@@ -1,15 +1,13 @@
+"use client";
+
 import { SuitabilityBadge } from "./SuitabilityBadge";
 import { SuitabilityLevel } from "@/lib/types";
 import { useLanguage } from "@/lib/i18n";
 import { Wind, Waves, Thermometer, Loader2 } from "lucide-react";
-
-import { translations } from "@/lib/i18n";
-
-type SessionKey = keyof typeof translations.es.session;
-export type SessionLabel = Exclude<SessionKey, 'conditions'>;
+import { useUnit } from "@/lib/units";
 
 interface SessionCardProps {
-    label: SessionLabel; // This comes from parent, will be translated there
+    label: string;
     time: string;
     conditions: {
         windSpeed: number;
@@ -22,6 +20,7 @@ interface SessionCardProps {
 
 export function SessionCard({ label, time, conditions, level, loading = false }: SessionCardProps) {
     const { t } = useLanguage();
+    const { convertSpeed } = useUnit();
 
     // Using mapping from types to translation keys if necessary or directly logic
     const bottomText =
@@ -39,7 +38,8 @@ export function SessionCard({ label, time, conditions, level, loading = false }:
             <div className="flex justify-between items-start">
                 <div className="flex flex-col">
                     <span className="text-white font-semibold text-xl mb-0.5">{time}</span>
-                    <span className="text-white/80 text-sm font-light">{t.session[label]}</span>
+                    {/* @ts-ignore */}
+                    <span className="text-white/80 text-sm font-light">{t.session[label] || label}</span>
                 </div>
                 <SuitabilityBadge level={level} />
             </div>
@@ -48,23 +48,29 @@ export function SessionCard({ label, time, conditions, level, loading = false }:
 
             <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
-                    <Wind className="w-5 h-5 text-white/60" />
-                    <div className="flex justify-between w-full">
-                        <span className="text-white/60 text-sm font-medium">{t.session.wind}</span>
-                        <ValueDisplay value={conditions.windSpeed} unit="kt" />
+                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                        <Wind className="w-4 h-4 text-sky-400" />
+                    </div>
+                    <div>
+                        <p className="text-[10px] text-white/60 font-bold uppercase tracking-wider">{t.session.wind}</p>
+                        <p className="text-sm font-bold text-white">{convertSpeed(conditions.windSpeed)}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <Waves className="w-5 h-5 text-white/60" />
-                    <div className="flex justify-between w-full">
-                        <span className="text-white/60 text-sm font-medium">{t.session.swell}</span>
+                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                        <Waves className="w-4 h-4 text-sky-400" />
+                    </div>
+                    <div>
+                        <p className="text-[10px] text-white/60 font-bold uppercase tracking-wider">{t.session.swell}</p>
                         <ValueDisplay value={`${conditions.waveHeight}m 10s`} unit="" />
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <Thermometer className="w-5 h-5 text-white/60" />
-                    <div className="flex justify-between w-full">
-                        <span className="text-white/60 text-sm font-medium">{t.session.water}</span>
+                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                        <Thermometer className="w-4 h-4 text-sky-400" />
+                    </div>
+                    <div>
+                        <p className="text-[10px] text-white/60 font-bold uppercase tracking-wider">{t.session.water}</p>
                         <ValueDisplay value={conditions.temperature} unit="°C" />
                     </div>
                 </div>

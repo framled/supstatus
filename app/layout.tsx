@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google"; // Changed to Inter matching Stitch
 import "./globals.css";
+import { UnitProvider } from "@/lib/units";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -22,7 +23,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} antialiased bg-[#1a1a2e] text-white overflow-x-hidden`}
       >
-        {children}
+        <UnitProvider>
+          {children}
+        </UnitProvider>
       </body>
     </html>
   );

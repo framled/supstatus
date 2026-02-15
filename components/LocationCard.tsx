@@ -4,6 +4,7 @@ import { Location, SuitabilityLevel } from "@/lib/types";
 import { Wind, CheckCircle, Sun } from "lucide-react";
 import { SuitabilityBadge } from "./SuitabilityBadge";
 import clsx from "clsx";
+import { useUnit } from "@/lib/units";
 
 interface LocationCardProps {
     location: Location | null;
@@ -18,6 +19,8 @@ interface LocationCardProps {
 }
 
 export function LocationCard({ location, weather, suitability, className, compact = false }: LocationCardProps) {
+    const { convertSpeed } = useUnit();
+
     if (!location) return null;
 
     if (compact) {
@@ -39,7 +42,7 @@ export function LocationCard({ location, weather, suitability, className, compac
 
                         <div className="flex items-center gap-2">
                             <Wind className="w-4 h-4 text-sunset-purple" />
-                            <span className="text-sm font-semibold text-white">{weather.windSpeed.toFixed(0)} kt</span>
+                            <span className="text-sm font-semibold text-white">{convertSpeed(weather.windSpeed)}</span>
                         </div>
                     </div>
                 )}
@@ -71,7 +74,7 @@ export function LocationCard({ location, weather, suitability, className, compac
                             <span className="text-xs uppercase tracking-wider text-foreground/40 mb-1">Wind</span>
                             <div className="flex items-center gap-1">
                                 <Wind className="w-4 h-4 text-sunset-purple" />
-                                <span className="font-semibold text-foreground">{weather.windSpeed.toFixed(0)} kt SW</span>
+                                <span className="font-semibold text-foreground">{convertSpeed(weather.windSpeed)} SW</span>
                             </div>
                         </div>
                         <div className="flex flex-col">
