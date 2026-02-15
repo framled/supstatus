@@ -14,7 +14,7 @@ interface GlassCardProps {
 export function GlassCard({ layout = 'vertical', icon, label, value, loading = false, className }: GlassCardProps) {
     return (
         <div className={clsx(
-            "glass-panel rounded-2xl p-4 flex",
+            "glass-morphism rounded-3xl p-5 flex transition-all duration-300 hover:bg-white/5",
             layout === 'vertical' ? "flex-col items-center justify-center text-center gap-2" : "flex-row items-center gap-4",
             className
         )}>
@@ -25,9 +25,9 @@ export function GlassCard({ layout = 'vertical', icon, label, value, loading = f
             )}
 
             <div className={clsx("flex flex-col", layout === 'vertical' ? "items-center" : "items-start")}>
-                <span className="text-cream/60 text-xs uppercase tracking-wider">{label}</span>
+                <span className="text-white/60 text-xs uppercase tracking-wider">{label}</span>
                 {loading ? (
-                    <Loader2 className="w-5 h-5 animate-spin text-white my-1" />
+                    <Loader2 className="w-5 h-5 animate-spin text-white/60 my-1" />
                 ) : (
                     <span className="text-white font-semibold">{value}</span>
                 )}

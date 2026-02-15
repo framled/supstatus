@@ -32,6 +32,7 @@ export interface Location {
     name: string;
     lat: number;
     lon: number;
+    region?: string;
 }
 
 export type SuitabilityLevel = 'Junior' | 'Intermediate' | 'Senior';

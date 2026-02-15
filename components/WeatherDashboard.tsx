@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { Location, ForecastData } from "@/lib/types";
 import { fetchWeather } from "@/lib/weather";
 import { determineRequiredLevel } from "@/lib/suitability";
@@ -10,8 +11,14 @@ import { DaySelector } from "./DaySelector";
 import { SessionCard } from "./SessionCard";
 import { WeatherError } from "./WeatherError";
 import { useLanguage } from "@/lib/i18n";
-import { Calendar } from "lucide-react";
-import clsx from "clsx";
+import { CheckCircle } from "lucide-react";
+import { LocationCard } from "./LocationCard";
+import { Header } from "./Header";
+
+const OpenMap = dynamic(() => import("./OpenMap"), {
+    ssr: false,
+    loading: () => <div className="w-full h-full bg-deep-indigo animate-pulse" />
+});
 
 const SESSIONS = [
     { id: "early", label: "Early Session", time: "06:00" },
@@ -22,7 +29,12 @@ const SESSIONS = [
     { id: "night", label: "Nightfall", time: "21:00" },
 ] as const;
 
-export function WeatherDashboard({ location }: { location: Location | null }) {
+interface WeatherDashboardProps {
+    location: Location | null;
+    onLocationSelect: (location: Location) => void;
+}
+
+export function WeatherDashboard({ location, onLocationSelect }: WeatherDashboardProps) {
     const [forecast, setForecast] = useState<ForecastData | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -48,33 +60,14 @@ export function WeatherDashboard({ location }: { location: Location | null }) {
         loadWeather();
     }, [location]);
 
-    if (!location) {
-        return <div className="text-center text-cream/60 mt-20 text-lg">Select a location to check conditions</div>;
-    }
-
-    if (error) {
-        return <WeatherError message={error} onRetry={loadWeather} />;
-    }
-
-    if (!forecast && loading) {
-        return <div className="text-center text-white mt-20 animate-pulse">Loading forecast...</div>;
-    }
-
-    if (!forecast) return null;
-
     // Get Data for Selected Date
     const dateStr = selectedDate.toISOString().split('T')[0];
-    const dailyData = forecast[dateStr];
-
-    if (!dailyData) {
-        return <div className="text-center text-cream/60 mt-20">No forecast data available for this date.</div>;
-    }
+    const dailyData = forecast ? forecast[dateStr] : null;
 
     // Generate session cards based on REAL hourly data
-    const sessionCards = SESSIONS.map((session) => {
+    const sessionCards = dailyData ? SESSIONS.map((session) => {
         const targetHour = parseInt(session.time.split(':')[0]);
 
-        // Find closest hourly data
         const hourlyCondition = dailyData.hourly.find((h) => {
             const hTime = new Date(h.time);
             return hTime.getHours() === targetHour;
@@ -93,51 +86,110 @@ export function WeatherDashboard({ location }: { location: Location | null }) {
             conditions,
             level
         };
-    });
+    }) : [];
+
+    const currentWeather = dailyData ? {
+        temperature: dailyData.hourly[0]?.temperature || 0,
+        windSpeed: dailyData.hourly[0]?.windSpeed || 0,
+        waveHeight: dailyData.hourly[0]?.waveHeight || 0,
+    } : null;
 
     const locale = language === 'es' ? 'es-CL' : 'en-US';
 
     return (
-        <div className="w-full mt-6">
-            <DaySelector selectedDate={selectedDate} onSelect={setSelectedDate} />
+        <div className="w-full flex flex-col pb-10 bg-deep-indigo min-h-screen">
 
-            {/* Dashboard Header */}
-            <div className="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
-                <div>
-                    <div className="flex items-center gap-2 text-cream/70 text-sm mb-1">
-                        <Calendar className="w-4 h-4" />
-                        <span>{t.dashboard.forecastFor}</span>
-                    </div>
-                    <h2 className="text-3xl font-bold text-white drop-shadow-sm capitalize">
-                        {selectedDate.toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' })}
-                    </h2>
-                </div>
-            </div>
+            {/* 1. Header Component (Sticky, in flow) */}
+            <Header />
 
-            {/* Session Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {sessionCards.map((card) => (
-                    <SessionCard
-                        key={card.id}
-                        label={card.id}
-                        time={card.time}
-                        conditions={card.conditions}
-                        level={card.level}
-                        loading={loading}
+            {/* 2. Map Section (Below Header) */}
+            <section className="relative w-full h-[600px]">
+                <div className="relative w-full h-full z-[0]">
+                    <OpenMap
+                        location={location}
+                        onLocationSelect={onLocationSelect}
+                        className="w-full h-full rounded-none" // Removed border/radius for full width integration
                     />
-                ))}
-            </div>
+                </div>
 
-            {/* Info Bar */}
-            <SunTideBar
-                sunrise={dailyData.sunrise}
-                sunset={dailyData.sunset}
-                lowTide={dailyData.lowTideTime}
-                loading={loading}
-            />
+                {/* Location Info Overlay - Positioned relative to this section */}
+                <div className="absolute top-8 left-8 z-[50] w-80 pointer-events-none">
+                    <LocationCard
+                        location={location}
+                        weather={currentWeather}
+                        className="glass-morphism rounded-3xl p-6 pointer-events-auto shadow-2xl border-white/20"
+                    />
+                </div>
 
-            {/* Warning */}
-            <SafetyWarning />
+                {/* Gradient Bottom Overlay */}
+                <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-deep-indigo to-transparent z-[40] pointer-events-none" />
+            </section>
+
+            {/* 3. Date Selection (Floating Pill) */}
+            <section className="w-full px-6 -mt-6 relative z-[60] pointer-events-none">
+                <div className="flex justify-center">
+                    <div className="glass-morphism p-1 rounded-full inline-flex pointer-events-auto">
+                        <DaySelector selectedDate={selectedDate} onSelect={setSelectedDate} />
+                    </div>
+                </div>
+            </section>
+
+            {/* Forecast Section */}
+            <main className="container mx-auto px-6 py-12 space-y-12">
+                {error ? (
+                    <WeatherError message={error} onRetry={loadWeather} />
+                ) : !location ? (
+                    <div className="text-center text-foreground/60 mt-10 text-lg">Select a location on the map to see the forecast</div>
+                ) : (forecast && !loading) || loading ? (
+                    <div className="flex flex-col gap-12">
+
+                        {!dailyData ? (
+                            <div className="text-center text-foreground/60 mt-10 p-10 glass-morphism rounded-2xl">
+                                No forecast data available for this date.
+                            </div>
+                        ) : (
+                            <>
+                                {/* Recommended Sessions (Stitch ID: 152) */}
+                                <section>
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <CheckCircle className="text-primary w-6 h-6" /> {/* Verified Icon replacement */}
+                                        <h3 className="text-xl font-bold text-foreground tracking-wide">Recommended Sessions</h3>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {sessionCards.map((card) => (
+                                            <SessionCard
+                                                key={card.id}
+                                                label={card.id}
+                                                time={card.time}
+                                                conditions={card.conditions}
+                                                level={card.level}
+                                                loading={loading}
+                                            />
+                                        ))}
+                                    </div>
+                                </section>
+
+                                {/* Info Bar / Full Forecast */}
+                                <SunTideBar
+                                    sunrise={dailyData.sunrise}
+                                    sunset={dailyData.sunset}
+                                    lowTide={dailyData.lowTideTime}
+                                    loading={loading}
+                                />
+
+                                {/* Warning */}
+                                <SafetyWarning />
+                            </>
+                        )}
+                    </div>
+                ) : (
+                    <div className="text-center text-foreground mt-20 animate-pulse flex flex-col items-center gap-4">
+                        <div className="w-12 h-12 border-4 border-white/30 border-t-primary rounded-full animate-spin" />
+                        <span className="text-lg font-medium">Loading forecast data...</span>
+                    </div>
+                )}
+            </main>
         </div>
     );
 }

@@ -25,19 +25,19 @@ export function LanguageSelector() {
         <div className="relative" ref={ref}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-cream"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 transition-colors text-white"
             >
                 <Globe className="w-4 h-4" />
                 <span className="text-sm font-medium uppercase">{language}</span>
             </button>
 
             {isOpen && (
-                <div className="absolute top-full right-0 mt-2 w-32 glass-panel rounded-xl overflow-hidden border border-white/10 shadow-xl z-50 flex flex-col">
+                <div className="absolute top-full right-0 mt-2 w-32 bg-deep-indigo rounded-xl overflow-hidden border border-white/20 shadow-xl z-50 flex flex-col">
                     <button
                         onClick={() => { setLanguage('es'); setIsOpen(false); }}
                         className={clsx(
-                            "px-4 py-3 text-sm text-left hover:bg-white/10 transition-colors",
-                            language === 'es' ? "text-white font-bold bg-white/5" : "text-cream/70"
+                            "px-4 py-3 text-sm text-left hover:bg-white/10 transition-colors w-full",
+                            language === 'es' ? "text-white font-bold bg-white/10" : "text-white/70"
                         )}
                     >
                         Español
@@ -45,8 +45,8 @@ export function LanguageSelector() {
                     <button
                         onClick={() => { setLanguage('en'); setIsOpen(false); }}
                         className={clsx(
-                            "px-4 py-3 text-sm text-left hover:bg-white/10 transition-colors",
-                            language === 'en' ? "text-white font-bold bg-white/5" : "text-cream/70"
+                            "px-4 py-3 text-sm text-left hover:bg-white/10 transition-colors w-full",
+                            language === 'en' ? "text-white font-bold bg-white/10" : "text-white/70"
                         )}
                     >
                         English

@@ -32,7 +32,7 @@ export function SunTideBar({ sunrise, sunset, lowTide, loading = false }: SunTid
             />
             <GlassCard
                 layout="vertical"
-                icon={<Sunset className="text-primary w-6 h-6" />}
+                icon={<Sunset className="text-sunset-orange w-6 h-6" />}
                 label={t.sunTide.sunset}
                 value={formatTime(sunset)}
                 loading={loading}

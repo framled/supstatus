@@ -1,47 +1,60 @@
 @import "tailwindcss";
 
 :root {
-  --sunset-gradient: linear-gradient(135deg, #3b2667 0%, #bc70a4 50%, #ff7e5f 100%);
-  --background: #3b2667;
-  --foreground: #FFF9F0;
+  --sunset-orange: #ff8e71;
+  --sunset-purple: #6d5dfc;
+  --deep-indigo: #1a1a2e;
+  --glass-bg: rgba(26, 26, 46, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --font-inter: "Inter", sans-serif;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: #FF7E5F;
-  --color-accent: #FEB47B;
-  --color-indigo: #3B2667;
-  --color-cream: #FFF9F0;
-  --font-sans: var(--font-lexend);
+  --color-background: var(--deep-indigo);
+  --color-foreground: #f8fafc;
+  --color-sunset-orange: #ff8e71;
+  --color-sunset-purple: #6d5dfc;
+  --color-deep-indigo: #1a1a2e;
+  --color-glass-bg: rgba(26, 26, 46, 0.65);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+  --font-sans: var(--font-inter);
 }
 
 body {
-  background: var(--sunset-gradient);
-  background-attachment: fixed;
+  background-color: var(--deep-indigo);
   color: var(--foreground);
   font-family: var(--font-sans);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
-@layer utilities {
-  .glass-panel {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-  }
+.glass-morphism {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
 
-  .glass-card {
-    background: rgba(255, 255, 255, 0.07);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    transition: all 0.3s ease;
-  }
+.custom-marker {
+  background-color: var(--sunset-orange);
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  box-shadow: 0 0 10px rgba(255, 142, 113, 0.8);
+  display: block;
+}
 
-  .glass-card:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 126, 95, 0.5);
-    transform: translateY(-2px);
-  }
+/* Scrollbar styles from Stitch */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--deep-indigo);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sunset-purple);
+  border-radius: 10px;
 }

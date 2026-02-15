@@ -30,16 +30,16 @@ export function SessionCard({ label, time, conditions, level, loading = false }:
                 t.session.conditions.senior;
 
     const ValueDisplay = ({ value, unit }: { value: string | number, unit: string }) => {
-        if (loading) return <Loader2 className="w-4 h-4 animate-spin text-cream/70" />;
-        return <span className="text-cream/90 text-sm font-mono">{value}{unit}</span>;
+        if (loading) return <Loader2 className="w-4 h-4 animate-spin text-white" />;
+        return <span className="text-white text-sm font-mono font-bold">{value}{unit}</span>;
     };
 
     return (
-        <div className="glass-card p-5 rounded-lg flex flex-col gap-4 group transition-all duration-300 hover:bg-white/10 hover:scale-[1.02]">
+        <div className="glass-morphism p-5 rounded-3xl flex flex-col gap-4 group transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:!bg-white/5 hover:backdrop-blur-xl">
             <div className="flex justify-between items-start">
                 <div className="flex flex-col">
                     <span className="text-white font-semibold text-xl mb-0.5">{time}</span>
-                    <span className="text-cream/70 text-sm font-light">{t.session[label]}</span>
+                    <span className="text-white/80 text-sm font-light">{t.session[label]}</span>
                 </div>
                 <SuitabilityBadge level={level} />
             </div>
@@ -48,29 +48,29 @@ export function SessionCard({ label, time, conditions, level, loading = false }:
 
             <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
-                    <Wind className="w-5 h-5 text-cream/70" />
+                    <Wind className="w-5 h-5 text-white/60" />
                     <div className="flex justify-between w-full">
-                        <span className="text-white text-sm font-medium">{t.session.wind}</span>
+                        <span className="text-white/60 text-sm font-medium">{t.session.wind}</span>
                         <ValueDisplay value={conditions.windSpeed} unit="kt" />
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <Waves className="w-5 h-5 text-cream/70" />
+                    <Waves className="w-5 h-5 text-white/60" />
                     <div className="flex justify-between w-full">
-                        <span className="text-white text-sm font-medium">{t.session.swell}</span>
+                        <span className="text-white/60 text-sm font-medium">{t.session.swell}</span>
                         <ValueDisplay value={`${conditions.waveHeight}m 10s`} unit="" />
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <Thermometer className="w-5 h-5 text-cream/70" />
+                    <Thermometer className="w-5 h-5 text-white/60" />
                     <div className="flex justify-between w-full">
-                        <span className="text-white text-sm font-medium">{t.session.water}</span>
+                        <span className="text-white/60 text-sm font-medium">{t.session.water}</span>
                         <ValueDisplay value={conditions.temperature} unit="°C" />
                     </div>
                 </div>
             </div>
 
-            <p className="text-xs mt-2 text-cream/60 italic border-t border-white/5 pt-3">
+            <p className="text-xs mt-2 text-white/60 italic border-t border-white/5 pt-3">
                 {bottomText}
             </p>
         </div>

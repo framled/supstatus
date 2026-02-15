@@ -1,8 +1,6 @@
 "use client";
 
-import { useRef } from "react";
 import clsx from "clsx";
-import { useLanguage } from "@/lib/i18n";
 
 interface DaySelectorProps {
     selectedDate: Date;
@@ -10,59 +8,37 @@ interface DaySelectorProps {
 }
 
 export function DaySelector({ selectedDate, onSelect }: DaySelectorProps) {
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const { t, language } = useLanguage();
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-    // Generate next 7 days
-    const days = Array.from({ length: 7 }, (_, i) => {
-        const d = new Date();
-        d.setDate(new Date().getDate() + i);
-        return d;
-    });
-
-    const isSameDay = (d1: Date, d2: Date) =>
-        d1.getDate() === d2.getDate() &&
-        d1.getMonth() === d2.getMonth();
-
-    const formatDay = (date: Date, index: number) => {
-        if (index === 0) return t.days.today;
-        if (index === 1) return t.days.tomorrow;
-        // Use 'es-CL' for Spanish, 'en-US' for English
-        const locale = language === 'es' ? 'es-CL' : 'en-US';
-        return date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric' });
-    };
-
-    const formatWeekday = (date: Date, index: number) => {
-        if (index === 0) return t.days.now;
-        const locale = language === 'es' ? 'es-CL' : 'en-US';
-        return date.toLocaleDateString(locale, { weekday: 'short' });
-    };
+    const isToday = (date: Date) => date.toDateString() === selectedDate.toDateString();
 
     return (
-        <div className="w-full overflow-x-auto no-scrollbar py-4 mb-2" ref={scrollRef}>
-            <div className="flex gap-3 min-w-max px-1">
-                {days.map((date, idx) => {
-                    const selected = isSameDay(date, selectedDate);
-                    return (
-                        <button
-                            key={idx}
-                            onClick={() => onSelect(date)}
-                            className={clsx(
-                                "flex flex-col items-center justify-center px-5 py-2 rounded-xl transition-all duration-300 border backdrop-blur-md",
-                                selected
-                                    ? "bg-white/20 border-white/40 shadow-[0_0_15px_rgba(255,255,255,0.2)] scale-105"
-                                    : "bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20 text-cream/60"
-                            )}
-                        >
-                            <span className={clsx("text-xs font-bold uppercase tracking-wider", selected ? "text-white" : "text-cream/50")}>
-                                {formatWeekday(date, idx)}
-                            </span>
-                            <span className={clsx("text-sm font-semibold whitespace-nowrap capitalize", selected ? "text-white" : "text-cream/80")}>
-                                {formatDay(date, idx)}
-                            </span>
-                        </button>
-                    );
-                })}
+        <div className="flex justify-center">
+            <div className="bg-white/5 backdrop-blur-md p-1 rounded-full inline-flex border border-white/10">
+                <button
+                    onClick={() => onSelect(today)}
+                    className={clsx(
+                        "px-10 py-3 rounded-full text-sm font-bold transition-all shadow-lg",
+                        isToday(today)
+                            ? "bg-gradient-to-r from-sunset-orange to-sunset-purple text-foreground"
+                            : "text-foreground/60 hover:text-foreground bg-transparent shadow-none"
+                    )}
+                >
+                    TODAY
+                </button>
+                <button
+                    onClick={() => onSelect(tomorrow)}
+                    className={clsx(
+                        "px-10 py-3 rounded-full text-sm font-medium transition-all",
+                        isToday(tomorrow)
+                            ? "bg-gradient-to-r from-sunset-orange to-sunset-purple text-foreground shadow-lg font-bold"
+                            : "text-foreground/60 hover:text-foreground bg-transparent"
+                    )}
+                >
+                    TOMORROW
+                </button>
             </div>
         </div>
     );
